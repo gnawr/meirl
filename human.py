@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from scipy import stats
 
-import gridworld
+from grid import AgentGridworld, Actions
 #################################
 #### Featurization functions ####
 #################################
@@ -181,3 +181,44 @@ def visualize_feature(feat_vals, idx):
     plt.minorticks_on
     ax.grid(True, which='both', color='black', linestyle='-', linewidth=2)
     plt.show(block=False)
+
+
+####### OBSERVATION MODEL #######
+
+def observation_model(Phi_xi, Phi_xibar, theta, beta):
+    """
+    Finds observation model for given demonstrated features, using initialized model.
+    Params:
+        Phi_xi [array] -- The cost features for an observed trajectory.
+        Phi_xibar [list] -- A list of the cost features for all trajectories in the grid.
+        theta [list] -- The preference parameter.
+        beta [float] -- The rationality coefficient.
+    Returns:
+        P_xi_bt [float] -- P(xi | theta, beta)
+    """ 
+    num = np.exp(-1 * beta * (np.dot(theta.T,Phi_xi)))
+    denom = 0
+    for phi in Phi_xibar:
+        denom += np.exp(-1 * beta * (np.dot(theta.T,phi)))
+    P_xi_bt = num / denom
+    return P_xi_bt
+
+def sample_demonstrations(theta, beta, samples):
+    """
+    Sample <samples> demonstrations for a given theta and beta.
+    Params:
+        theta [list] -- The preference parameter.
+        beta [float] -- The rationality coefficient.
+        samples [int] -- Number of demonstrations to be sampled.
+    """ 
+    # Generate feature values for all trajectories in the gridworld.
+    Phi_xibar = [featurize(xi, feat_list, scaling_coeffs) for xi in SG_trajs]
+
+    # Create the xi observation model for all trajectories.
+    P_xi = [observation_model(Phi, Phi_xibar, theta, beta) for Phi in Phi_xibar]
+    
+    # Sample <samples> trajectories using this distribution.
+    traj_idx = np.random.choice(len(P_xi), samples, p=P_xi)
+
+    # Return trajectories given by traj_idx
+    return [SG_trajs[i] for i in traj_idx]

@@ -8,6 +8,8 @@ from scipy import stats
 
 # Defining the agent grid world.
 
+#TODO: add diagonals
+
 class Actions(IntEnum):
     UP = 0
     DOWN = 1
@@ -108,16 +110,16 @@ class AgentGridworld(object):
             y_prime = y + 1
         elif a == Actions.UP:
             y_prime = y - 1
-        elif a == Actions.UP_LEFT:
-            x_prime, y_prime = x - 1, y - 1
-        elif a == Actions.UP_RIGHT:
-            x_prime, y_prime = x + 1, y - 1
-        elif a == Actions.DOWN_LEFT:
-            x_prime, y_prime = x - 1, y + 1
-        elif a == Actions.DOWN_RIGHT:
-            x_prime, y_prime = x + 1, y + 1
-        elif a == Actions.ABSORB:
-            pass
+        # elif a == Actions.UP_LEFT:
+        #     x_prime, y_prime = x - 1, y - 1
+        # elif a == Actions.UP_RIGHT:
+        #     x_prime, y_prime = x + 1, y - 1
+        # elif a == Actions.DOWN_LEFT:
+        #     x_prime, y_prime = x - 1, y + 1
+        # elif a == Actions.DOWN_RIGHT:
+        #     x_prime, y_prime = x + 1, y + 1
+        # elif a == Actions.ABSORB:
+        #     pass
         else:
             raise BaseException("undefined action {}".format(a))
 
@@ -144,26 +146,33 @@ class AgentGridworld(object):
         x2, y2 = self.state_to_coor(sp)
 
         if x1 == x2:
-            if y1 == y2:
-                return Actions.ABSORB
-            elif y1 < y2:
+            # if y1 == y2:
+            #     return Actions.ABSORB
+            # elif y1 < y2:
+            #     return Actions.DOWN
+            # else:
+            #     return Actions.UP
+            if y1 <= y2:
                 return Actions.DOWN
             else:
                 return Actions.UP
         elif x1 < x2:
-            if y1 == y2:
-                return Actions.RIGHT
-            elif y1 < y2:
-                return Actions.DOWN_RIGHT
-            else:
-                return Actions.UP_RIGHT
+            # if y1 == y2:
+            #     return Actions.RIGHT
+            # elif y1 < y2:
+            #     return Actions.DOWN_RIGHT
+            # else:
+            #     return Actions.UP_RIGHT
+            
+            return Actions.RIGHT
         else:
-            if y1 == y2:
-                return Actions.LEFT
-            elif y1 < y2:
-                return Actions.DOWN_LEFT
-            else:
-                return Actions.UP_LEFT
+            # if y1 == y2:
+            #     return Actions.LEFT
+            # elif y1 < y2:
+            #     return Actions.DOWN_LEFT
+            # else:
+            #     return Actions.UP_LEFT
+            return Actions.LEFT
     
     def is_blocked(self, s):
         """
